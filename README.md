@@ -12,4 +12,8 @@ flask db init
 flask db migrate
 flask db upgrade
 ```
-
+- Create `.env` from `.env.example` and fill all information
+- Run application
+```
+flask run
+```
