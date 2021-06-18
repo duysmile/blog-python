@@ -25,6 +25,32 @@ GG_SCOPE = [
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 from ..model.user import User
+from ....helpers.jwt_token import generate_token
+
+def get_auth_social(provider):
+    authorize_url = ""
+    if provider == "facebook":
+        authorize_url = get_auth_url_fb()
+    elif provider == "google":
+        authorize_url = get_auth_url_gg()
+    else:
+        return Exception("cannot get " + provider + " auth url"), ""
+    return None, authorize_url
+
+def login_with_social(path, provider):
+    email = ""
+    if provider == "facebook":
+        email = handle_fb_callback(path)
+    elif provider == "google":
+        email = handle_gg_callback(path)
+    else:
+        return Exception("invalid provider"), ""
+
+    error, user = create_or_get_user(email, provider)
+    if error is not None:
+        return error, ""
+
+    return None, generate_token({"id": user.id})
 
 def get_auth_url_fb():
     facebook = requests_oauthlib.OAuth2Session(
@@ -100,14 +126,17 @@ def handle_gg_callback(path):
     return email
 
 
-def create_user(email, provider):
+def create_or_get_user(email, provider):
     exist_user = User.query.filter_by(email=email).first()
     if exist_user is not None:
-        return Exception("email is already existed")
+        if exist_user["provider"] != provider:
+            return Exception("email is already existed"), None
+        else:
+            return None, exist_user
 
-    User(
+    user = User(
         provider=provider,
         email=email,
     ).create()
 
-    return None
+    return None, user

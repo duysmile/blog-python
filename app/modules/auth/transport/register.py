@@ -3,47 +3,33 @@ import flask
 import logging
 
 from app.modules.auth.model.user import User
-from ..biz.register_biz import get_auth_url_fb, handle_fb_callback, create_user, get_auth_url_gg, handle_gg_callback
+from ..biz.register_biz import login_with_social, get_auth_social
 
 auth_api = Blueprint("authentication", __name__)
 
-@auth_api.route("/register", methods=["POST"])
-def register():
+@auth_api.route("/login/<provider>", methods=["POST"])
+def login(provider):
     try:
-        data = request.get_json()
-        provider = data["provider"]
         if provider is None:
             return make_response(jsonify({"data": "must provide provider"}), 400)
 
-        authorize_url = ""
-        if provider == "facebook":
-            authorize_url = get_auth_url_fb()
-        elif provider == "google":
-            authorize_url = get_auth_url_gg()
-        else:
+        error, authorize_url = get_auth_social(provider)
+        if error is not None:
             return make_response(jsonify({"error": "must provide provider"}), 400)
 
         return make_response(jsonify({"data": authorize_url}), 200)
     except Exception as e:
         logging.error(e)
-        return make_response(jsonify({"error": "cannot create auth url for facebook"}), 500)
+        return make_response(jsonify({"error": "cannot create " + provider+ " auth url"}), 500)
 
 
 @auth_api.route("/<provider>/callback", methods=["GET", "POST"])
-def fb_callback(provider):
+def social_callback(provider):
     try:
-        email = ""
-        if provider == "facebook":
-            email = handle_fb_callback(flask.request.full_path)
-        elif provider == "google":
-            email = handle_gg_callback(flask.request.full_path)
-        else:
-            return make_response(jsonify({"error": "invalid provider"}), 400)
-
-        error = create_user(email, provider)
+        error, token = login_with_social(flask.request.full_path, provider)
         if error is not None:
             return make_response(jsonify({"error": str(error)}), 400)
-        return make_response(jsonify({"data": True}), 200)
+        return make_response(jsonify({"data": token}), 200)
     except Exception as e:
         logging.error(e)
         return make_response(jsonify({"error": "cannot register user"}), 500)
