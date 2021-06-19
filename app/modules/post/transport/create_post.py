@@ -10,7 +10,7 @@ create_post_api = Blueprint("/posts", __name__)
 
 @create_post_api.route("", methods=["POST"])
 @token_required
-# @user_required_info
+@user_required_info
 def create_post(current_user):
     try:
         data = request.get_json()
@@ -20,4 +20,4 @@ def create_post(current_user):
         return make_response(jsonify({"data": True}), 200)
     except Exception as e:
         logging.error(e)
-        return make_response(jsonify({"error": "cannot create post"}), 500)
+        return make_response(jsonify({"error": str(e)}), 500)
