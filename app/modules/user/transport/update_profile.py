@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, make_response
 import flask
 import logging
 
-from app.modules.user.model.user import User, FbInfoSchema, GgInfoSchema
+from app.modules.user.model.user import FbInfoSchema, GgInfoSchema
 from ..biz.update_profile import create_or_update_profile
 from ....middlewares.authenticate import token_required
 

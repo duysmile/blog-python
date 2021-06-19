@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify, make_response
 import logging
 
-from app.modules.user.model.user import User
 from ..biz.register_biz import login_with_social, get_auth_social
 
 auth_api = Blueprint("authentication", __name__)
