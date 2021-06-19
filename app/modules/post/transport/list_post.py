@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, make_response
 import logging
 
 from ..biz.list_post import list_all_post
+from ..model.post import ListPostSchema
 
 list_post_api = Blueprint("list_all_posts", __name__)
 
@@ -14,8 +15,11 @@ def list_all_post_controller():
 
         posts = list_all_post(cursor)
 
+        for i in range(len(posts)):
+            posts[i] = ListPostSchema().load(posts[i]._mapping)
+
         if len(posts) > 0:
-            next_cursor = posts[-1].id
+            next_cursor = posts[-1]['id']
         else:
             next_cursor = ""
 

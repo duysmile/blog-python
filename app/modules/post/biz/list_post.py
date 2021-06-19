@@ -3,14 +3,14 @@ import os
 from ..model.post import Post
 
 def list_all_post(cursor):
-    sql = Post.query
+    sql = Post.query.with_entities(Post.id, Post.title, Post.summary)
     if cursor is not None and cursor > 0:
         sql = sql.filter(Post.id < cursor)
 
     return sql.order_by(Post.id.desc()).limit(10).all()
 
 def list_post_by_user(user_id, cursor):
-    sql = Post.query.filter_by(author_id=user_id)
+    sql = Post.query.filter_by(author_id=user_id).with_entities(Post.id, Post.title, Post.summary)
     if cursor is not None and cursor > 0:
         sql = sql.filter(Post.id < cursor)
 

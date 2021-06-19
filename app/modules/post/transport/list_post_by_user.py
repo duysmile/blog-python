@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response
 import logging
 
+from ..model.post import ListPostSchema
 from ..biz.list_post import list_post_by_user
 
 list_post_by_user_api = Blueprint("list_posts_by_user", __name__)
@@ -14,8 +15,11 @@ def list_post_by_user_controller(user_id):
 
         posts = list_post_by_user(user_id, cursor)
 
+        for i in range(len(posts)):
+            posts[i] = ListPostSchema().load(posts[i]._mapping)
+
         if len(posts) > 0:
-            next_cursor = posts[-1].id
+            next_cursor = posts[-1]['id']
         else:
             next_cursor = ""
 
