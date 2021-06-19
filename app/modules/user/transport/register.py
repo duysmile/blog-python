@@ -6,7 +6,7 @@ from ..biz.register_biz import login_with_social, get_auth_social
 auth_api = Blueprint("authentication", __name__)
 
 @auth_api.route("/login/<provider>", methods=["POST"])
-def login(provider):
+def login_controller(provider):
     try:
         if provider is None:
             return make_response(jsonify({"data": "must provide provider"}), 400)

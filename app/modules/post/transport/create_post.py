@@ -1,17 +1,16 @@
 from flask import Blueprint, request, jsonify, make_response
-import flask
 import logging
 
 from app.modules.post.model.post import PostSchema
 from ..biz.create_post import create_post_biz
 from ....middlewares.authenticate import token_required, user_required_info
 
-create_post_api = Blueprint("/posts", __name__)
+create_post_api = Blueprint("create_posts", __name__)
 
 @create_post_api.route("", methods=["POST"])
 @token_required
 @user_required_info
-def create_post(current_user):
+def create_post_controller(current_user):
     try:
         data = request.get_json()
         data = PostSchema().load(data)

@@ -1,10 +1,18 @@
 import re
 from marshmallow import Schema, fields
+from dataclasses import dataclass
+
 from app import db
 
 import enum
 
+@dataclass
 class Post(db.Model):
+    id: int
+    title: str
+    summary: str
+    content: str
+
     __tablename__ = "posts"
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer)
@@ -23,14 +31,6 @@ class Post(db.Model):
     def update(id, data):
         Post.query.filter_by(id=id).update(data)
         db.session.commit()
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'title': self.title,
-            'summary': self.summary,
-            'content': self.content,
-        }
 
 class PostSchema(Schema):
     title = fields.Str(required=True, validate=lambda x: len(x) <= 1000)
