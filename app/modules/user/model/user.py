@@ -1,5 +1,7 @@
 import re
 from marshmallow import Schema, fields
+from dataclasses import dataclass
+
 from app import db
 
 import enum
@@ -8,7 +10,12 @@ class Provider(enum.Enum):
     facebook = "facebook"
     google = "google"
 
+@dataclass
 class User(db.Model):
+    id: int
+    email: str
+    provider: str
+
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     provider = db.Column(db.Enum(Provider))
@@ -45,13 +52,6 @@ class FbInfo(db.Model):
         FbInfo.query.filter_by(user_id=user_id).update(data)
         db.session.commit()
 
-    def serialize(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'phone_number': self.phone_number
-        }
-
 class GgInfo(db.Model):
     __tablename__ = "gg_informations"
     user_id = db.Column(db.Integer, primary_key=True)
@@ -68,13 +68,6 @@ class GgInfo(db.Model):
     def update(user_id, data):
         GgInfo.query.filter_by(user_id=user_id).update(data)
         db.session.commit()
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'occupation': self.occupation
-        }
 
 
 class FbInfoSchema(Schema):

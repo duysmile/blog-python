@@ -1,16 +1,15 @@
 from flask import Blueprint, request, jsonify, make_response
-import flask
 import logging
 
-from app.modules.user.model.user import User, FbInfoSchema, GgInfoSchema
+from app.modules.user.model.user import FbInfoSchema, GgInfoSchema
 from ..biz.update_profile import create_or_update_profile
 from ....middlewares.authenticate import token_required
 
-user_api = Blueprint("/me", __name__)
+user_api = Blueprint("me", __name__)
 
 @user_api.route("/profile", methods=["POST"])
 @token_required
-def login(current_user):
+def update_profile_controller(current_user):
     try:
         data = request.get_json()
         provider = current_user.provider.value
