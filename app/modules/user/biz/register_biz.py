@@ -28,7 +28,6 @@ from ..model.user import User
 from ....helpers.jwt_token import generate_token
 
 def get_auth_social(provider):
-    authorize_url = ""
     if provider == "facebook":
         authorize_url = get_auth_url_fb()
     elif provider == "google":
@@ -38,7 +37,6 @@ def get_auth_social(provider):
     return None, authorize_url
 
 def login_with_social(path, provider):
-    email = ""
     if provider == "facebook":
         email = handle_fb_callback(path)
     elif provider == "google":

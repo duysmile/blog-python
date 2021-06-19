@@ -1,8 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response
-import flask
 import logging
 
-from app.modules.auth.model.user import User
+from app.modules.user.model.user import User
 from ..biz.register_biz import login_with_social, get_auth_social
 
 auth_api = Blueprint("authentication", __name__)
@@ -26,7 +25,7 @@ def login(provider):
 @auth_api.route("/<provider>/callback", methods=["GET", "POST"])
 def social_callback(provider):
     try:
-        error, token = login_with_social(flask.request.full_path, provider)
+        error, token = login_with_social(request.full_path, provider)
         if error is not None:
             return make_response(jsonify({"error": str(error)}), 400)
         return make_response(jsonify({"data": token}), 200)
