@@ -4,6 +4,8 @@ from ..model.post import Post
 from ...user.model.user import User, FbInfo, GgInfo
 from ...like.model.like import Like
 
+LIMIT_USER_DISPLAY = 2
+
 def get_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
 
@@ -16,10 +18,10 @@ def get_post(post_id):
         author_info = GgInfo.query.filter_by(user_id=author_id).first()
 
     likes = Like.query.filter_by(post_id=post_id).count()
-    last_likes = Like.query.filter_by(post_id=post_id).limit(2).all()
+    last_likes = Like.query.filter_by(post_id=post_id).limit(LIMIT_USER_DISPLAY).all()
     last_ids = []
     for i in range(len(last_likes)):
-        last_ids[i] = last_likes[i].user_id
+        last_ids.append(last_likes[i].user_id)
 
     users_like = User.query.filter(User.id.in_(last_ids)).all()
     arr_user = []
@@ -34,10 +36,10 @@ def get_post(post_id):
 
         arr_user.append(user.name)
 
-    remain_like = likes - 2
-    like_str = ",".join(arr_user)
+    remain_like = likes - LIMIT_USER_DISPLAY
+    like_str = ", ".join(arr_user)
     if remain_like > 0:
-        like_str += str(remain_like)
+        like_str += ", " + str(remain_like) + " other people"
     elif likes == 0:
         like_str += "No one"
 
