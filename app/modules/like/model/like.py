@@ -8,13 +8,9 @@ import enum
 
 @dataclass
 class Like(db.Model):
-    user_id: int
-    post_id: int
-
     __tablename__ = "post_likes"
     user_id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, primary_key=True)
-
     created_on = db.Column(db.DateTime, server_default=db.func.now())
 
     def create(self):
@@ -33,3 +29,6 @@ class Like(db.Model):
 class LikeSchema(Schema):
     post_id = fields.Int(required=True, validate=lambda x: 0 < x)
     user_id = fields.Int(required=True, validate=lambda x: 0 < x)
+
+class ListLikeSchema(Schema):
+    user_name = fields.Str(required=True)
